@@ -49,6 +49,8 @@ class Downloader extends Thread
     private final String megacrypter_link;
     private String file_key;
     private String file_name;
+    private String file_pass_hash;
+    private String file_noexpire_token;
     private volatile long prog;
     private File file;
     private volatile boolean exit;
@@ -189,6 +191,8 @@ class Downloader extends Thread
                 this.file_name=file_info[0];
                 this.size=Long.valueOf(file_info[1]);
                 this.file_key=file_info[2];
+                this.file_pass_hash = file_info[3];
+                this.file_noexpire_token = file_info[4];
                 
                 MiscTools.swingSetSelectedFile(this.getPanel().jFileChooser, new File(this.file_name), false);
 
@@ -549,7 +553,7 @@ class Downloader extends Thread
                 mc_error=false;
                 
                 try {
-                    this.download_urls[pos] = MegaCrypterAPI.getMegaFileDownloadUrl(this.megacrypter_link);
+                    this.download_urls[pos] = MegaCrypterAPI.getMegaFileDownloadUrl(this.megacrypter_link, this.file_pass_hash, this.file_noexpire_token);
                 }
                 catch(MegaCrypterAPIException e)
                 {
@@ -890,7 +894,7 @@ class Downloader extends Thread
 
             try
             {
-                 dl_url = MegaCrypterAPI.getMegaFileDownloadUrl(link);
+                 dl_url = MegaCrypterAPI.getMegaFileDownloadUrl(this.megacrypter_link, this.file_pass_hash, this.file_noexpire_token);
             }
             catch(MegaCrypterAPIException e)
             {

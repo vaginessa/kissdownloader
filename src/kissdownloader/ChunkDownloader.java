@@ -150,6 +150,11 @@ public class ChunkDownloader implements Runnable {
             this.downloader.getFilewriter().rejectChunkId(chunk_id);
         }   
         
+        if(!this.exit) {
+            MiscTools.swingSetEnabled(this.downloader.getPanel().slots, false, false);
+        }
+
+        
         this.downloader.stopThisSlot(this, chunk_error);
         
         synchronized(this.downloader.getFilewriter().getChunk_queue())

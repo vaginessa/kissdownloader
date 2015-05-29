@@ -6,6 +6,7 @@ import java.awt.FontFormatException;
 import java.awt.GraphicsEnvironment;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JSpinner;
@@ -72,7 +73,7 @@ public class MainBox extends javax.swing.JApplet {
         this.updateFont(this.cbc_check, font, Font.PLAIN);
         this.updateFont(this.keep_temp, font, Font.PLAIN);
         
-        this.version.setText("This is Kissdownloader 0.0.7-2");
+        this.version.setText("This is Kissdownloader 0.0.12");
         this.slots.setVisible(false);
         this.slots_label.setVisible(false);
         this.slots.setModel(new SpinnerNumberModel(Downloader.DEFAULT_WORKERS, Downloader.MIN_WORKERS, Downloader.MAX_WORKERS, 1));
@@ -286,24 +287,27 @@ public class MainBox extends javax.swing.JApplet {
 
     private void slotsStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_slotsStateChanged
     
-        if(!this.down.isExit()) {
-            
-            int sl = (int)this.slots.getValue();
-        
+       Executors.newCachedThreadPool().execute(() -> {
+
+            if(!this.down.isExit()) {
+
+            int sl = (int)MiscTools.swingGetValue(this.slots);
+
             int cdownloaders = this.down.getChunkdownloaders().size();
-            
+
             if(sl != cdownloaders) {
-                
+
                 if(sl > cdownloaders) {
-                
+
                     this.down.startSlot();
-                
+
                 } else {
 
                     this.down.stopLastStartedSlot();
                 }
             }
-        }
+
+        }});
     }//GEN-LAST:event_slotsStateChanged
 
     private void stop_buttonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_stop_buttonMouseClicked
