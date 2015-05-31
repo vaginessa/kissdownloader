@@ -75,7 +75,7 @@ public class MainBox extends javax.swing.JApplet {
         this.updateFont(this.cbc_check, font, Font.PLAIN);
         this.updateFont(this.keep_temp, font, Font.PLAIN);
         
-        this.version.setText("This is Kissdownloader 0.1.0");
+        this.version.setText("This is Kissdownloader 0.1.1");
         this.slots.setVisible(false);
         this.slots_label.setVisible(false);
         this.slots.setModel(new SpinnerNumberModel(Downloader.DEFAULT_WORKERS, Downloader.MIN_WORKERS, Downloader.MAX_WORKERS, 1));
