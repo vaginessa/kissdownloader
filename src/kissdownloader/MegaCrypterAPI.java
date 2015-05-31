@@ -47,6 +47,7 @@ public class MegaCrypterAPI {
         conn.setDoOutput(true);
         conn.setRequestMethod("POST");
         conn.setRequestProperty("Content-Type", "application/json");
+        conn.setRequestProperty("User-Agent", MainBox.USER_AGENT);
         
         OutputStream out;
         out = conn.getOutputStream();
@@ -85,9 +86,9 @@ public class MegaCrypterAPI {
         if(pass_hash != null)
         {
             try {
-                String pass = MiscTools.findFirstRegex("\"pass\" *: *(false|\"[^\"]+\")", data, 1);
+                String pass = MiscTools.findFirstRegex("\"pass\" *: *\"([^\"]+)\"", data, 1);
                 
-                byte[] iv = MiscTools.BASE642Bin(pass.replaceAll("\"", ""));
+                byte[] iv = MiscTools.BASE642Bin(pass);
                 
                 Cipher decrypter = CryptTools.genDecrypter("AES", "AES/CBC/PKCS5Padding", MiscTools.BASE642Bin(pass_hash),iv);
                 
@@ -113,6 +114,7 @@ public class MegaCrypterAPI {
         conn.setDoOutput(true);
         conn.setRequestMethod("POST");
         conn.setRequestProperty("Content-Type", "application/json");
+        conn.setRequestProperty("User-Agent", MainBox.USER_AGENT);
         
         OutputStream out;
         out = conn.getOutputStream();
@@ -156,12 +158,17 @@ public class MegaCrypterAPI {
         
         String noexpire_token = MiscTools.findFirstRegex("\"expire\" *: *\"[^\"]+#([^\"]+)\"", data, 1);
 
-        String pass = MiscTools.findFirstRegex("\"pass\" *: *(false|\"[^\"]+\")", data, 1);
+        String pass = MiscTools.findFirstRegex("\"pass\" *: *\"([^\"]+)\"", data, 1);
 
-        if(!pass.equals("false"))
+        if(pass != null)
         {
-            String pass_aux[] = pass.replaceAll("\"", "").split("#");
+            String pass_aux[] = pass.split("#");
 
+            if(pass_aux.length != 4)
+            {
+                throw new MegaCrypterAPIException("Bad password data!");
+            }
+            
             int iterations = Integer.parseInt(pass_aux[0]);
             
             String key_check = pass_aux[1];

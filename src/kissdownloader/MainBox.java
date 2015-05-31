@@ -15,6 +15,8 @@ import netscape.javascript.JSObject;
 
 public class MainBox extends javax.swing.JApplet {
 
+    public static final String USER_AGENT="Mozilla/5.0 (X11; Linux x86_64; rv:38.0) Gecko/20100101 Firefox/38.0";
+    
     /**
      * Initializes the applet main
      */
@@ -73,7 +75,7 @@ public class MainBox extends javax.swing.JApplet {
         this.updateFont(this.cbc_check, font, Font.PLAIN);
         this.updateFont(this.keep_temp, font, Font.PLAIN);
         
-        this.version.setText("This is Kissdownloader 0.0.12");
+        this.version.setText("This is Kissdownloader 0.1.0");
         this.slots.setVisible(false);
         this.slots_label.setVisible(false);
         this.slots.setModel(new SpinnerNumberModel(Downloader.DEFAULT_WORKERS, Downloader.MIN_WORKERS, Downloader.MAX_WORKERS, 1));
