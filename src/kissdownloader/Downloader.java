@@ -662,33 +662,46 @@ class Downloader extends Thread
         
         FileInputStream is = new FileInputStream(f);
         
-        Chunk chunk=null;
-        
         long chunk_id=1;
+        
         long tot=0;
- 
+        
+        int[] chunk_mac = new int[4];
+        
+        byte[] chunk_buffer = new byte[8*1024];
+        
+        byte[] byte_block = new byte[16];
+        
+        int[] int_block;
+        
+        int re;
+        
+        int reads;
+        
+        int to_read;
+        
         try
         {
             while(!this.exit)
             {
-                chunk = new Chunk(chunk_id++, this.size, null);
+                Chunk chunk = new Chunk(chunk_id++, this.size, null);
 
                 tot+=chunk.getSize();
-                int[] chunk_mac = {iv[0], iv[1], iv[0], iv[1]};
-                int re;
-                byte[] buffer = new byte[8*1024];
-                byte[] byte_block = new byte[16];
-                int[] int_block;
-                int reads = -2;
-                int to_read;
-
+                
+                chunk_mac[0]=iv[0];
+                chunk_mac[1]=iv[1];
+                chunk_mac[2]=iv[0];
+                chunk_mac[3]=iv[1];
+                
+                reads = -2;
+                
                 do
                 {
-                    to_read = chunk.getSize() - chunk.getOutputStream().size() >= buffer.length?buffer.length:(int)(chunk.getSize() - chunk.getOutputStream().size());
+                    to_read = chunk.getSize() - chunk.getOutputStream().size() >= chunk_buffer.length?chunk_buffer.length:(int)(chunk.getSize() - chunk.getOutputStream().size());
 
-                    re=is.read(buffer, 0, to_read);
+                    re=is.read(chunk_buffer, 0, to_read);
 
-                    chunk.getOutputStream().write(buffer, 0, re);
+                    chunk.getOutputStream().write(chunk_buffer, 0, re);
 
                 }while(!this.exit && chunk.getOutputStream().size()<chunk.getSize());
 
@@ -702,7 +715,7 @@ class Downloader extends Thread
                              byte_block[i]=0;
                      }
 
-                     int_block = MiscTools.bin2i32a(byte_block);
+                    int_block = MiscTools.bin2i32a(byte_block);
 
                      for(int i=0; i<chunk_mac.length; i++)
                      {
@@ -720,6 +733,8 @@ class Downloader extends Thread
                 }
 
                 file_mac = MiscTools.bin2i32a(cryptor.doFinal(MiscTools.i32a2bin(file_mac)));
+                
+      
             }
 
         } catch (ChunkInvalidIdException e){}
